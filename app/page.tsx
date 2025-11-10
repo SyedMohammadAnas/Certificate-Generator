@@ -44,12 +44,12 @@ export default function Home() {
     });
   };
 
-  const handleAddTextBox = () => {
+  const handleAddStaticText = () => {
     const newTextBox: TextBox = {
       id: Date.now().toString(),
       x: 100,
       y: 100,
-      text: 'New Text',
+      text: 'Static Text',
       fontSize: 24,
       fontFamily: 'Arial',
       color: '#000000',
@@ -82,9 +82,48 @@ export default function Home() {
   };
 
   const handleFieldsChange = (fields: FieldDefinition[]) => {
+    const oldFields = template.fields;
+    const newFields = fields;
+
+    // Find added fields
+    const addedFields = newFields.filter(
+      nf => !oldFields.some(of => of.name === nf.name)
+    );
+
+    // Find removed fields
+    const removedFields = oldFields.filter(
+      of => !newFields.some(nf => nf.name === of.name)
+    );
+
+    let updatedTextBoxes = [...template.textBoxes];
+
+    // Remove text boxes for deleted fields
+    if (removedFields.length > 0) {
+      updatedTextBoxes = updatedTextBoxes.filter(
+        tb => !removedFields.some(rf => rf.name === tb.fieldName)
+      );
+    }
+
+    // Add text boxes for new fields
+    addedFields.forEach((field, index) => {
+      const newTextBox: TextBox = {
+        id: `field-${field.name}-${Date.now()}`,
+        x: 100 + (index * 20),
+        y: 100 + (index * 20),
+        text: `{${field.name}}`,
+        fontSize: 24,
+        fontFamily: 'Arial',
+        color: '#000000',
+        alignment: 'left',
+        fieldName: field.name
+      };
+      updatedTextBoxes.push(newTextBox);
+    });
+
     setTemplate({
       ...template,
-      fields
+      fields,
+      textBoxes: updatedTextBoxes
     });
   };
 
@@ -140,10 +179,11 @@ export default function Home() {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-bold text-white">Editor</h2>
                   <button
-                    onClick={handleAddTextBox}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    onClick={handleAddStaticText}
+                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                    title="Add static text that doesn't change per member"
                   >
-                    Add Text Box
+                    Add Static Text
                   </button>
                 </div>
                 <div
@@ -208,6 +248,7 @@ export default function Home() {
                 fields={template.fields}
                 onMembersChange={setMembers}
                 onFieldsChange={handleFieldsChange}
+                template={template}
               />
             </div>
 

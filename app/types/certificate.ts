@@ -15,7 +15,7 @@ export interface TextBox {
 export interface FieldDefinition {
   name: string;
   label: string;
-  type: 'text' | 'email' | 'date' | 'custom';
+  type?: 'text' | 'email' | 'date' | 'custom';
   required?: boolean;
 }
 
@@ -37,4 +37,3 @@ export interface CertificateData {
   members: Member[];
   generatedAt: string;
 }
-

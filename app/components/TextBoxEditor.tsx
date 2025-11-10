@@ -107,10 +107,15 @@ export default function TextBoxEditor({
     };
   }, [isDragging, dragStart, scale, textBox, onUpdate]);
 
+  const isFieldLinked = !!textBox.fieldName;
+  const borderColor = isFieldLinked ? 'border-purple-500' : 'border-gray-500';
+  const hoverBorderColor = isFieldLinked ? 'group-hover:border-purple-400' : 'group-hover:border-blue-500';
+  const ringColor = isSelected ? (isFieldLinked ? 'ring-2 ring-purple-500' : 'ring-2 ring-blue-500') : '';
+
   return (
     <div
       ref={containerRef}
-      className={`absolute ${isSelected ? 'ring-2 ring-blue-500' : ''} ${isDragging ? 'cursor-grabbing' : 'cursor-move'}`}
+      className={`absolute ${ringColor} ${isDragging ? 'cursor-grabbing' : 'cursor-move'}`}
       style={{
         left: `${textBox.x * scale}px`,
         top: `${textBox.y * scale}px`,
@@ -121,6 +126,11 @@ export default function TextBoxEditor({
       onMouseDown={handleMouseDown}
     >
       <div className="drag-handle relative group">
+        {isFieldLinked && !isEditing && (
+          <div className="absolute -top-5 left-0 text-xs bg-purple-600 text-white px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Field: {textBox.fieldName}
+          </div>
+        )}
         {isEditing ? (
           <input
             ref={inputRef}
@@ -129,7 +139,7 @@ export default function TextBoxEditor({
             onChange={(e) => setEditText(e.target.value)}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            className="bg-gray-800 border-2 border-blue-500 px-2 py-1 rounded min-w-[100px] text-white"
+            className={`bg-gray-800 border-2 ${isFieldLinked ? 'border-purple-500' : 'border-blue-500'} px-2 py-1 rounded min-w-[100px] text-white`}
             style={{
               fontSize: `${textBox.fontSize * scale}px`,
               fontFamily: textBox.fontFamily,
@@ -139,7 +149,7 @@ export default function TextBoxEditor({
           />
         ) : (
           <div
-            className="px-2 py-1 bg-gray-800 bg-opacity-90 rounded border border-gray-500 group-hover:border-blue-500"
+            className={`px-2 py-1 bg-gray-800 bg-opacity-90 rounded border ${borderColor} ${hoverBorderColor} transition-colors`}
             onDoubleClick={handleDoubleClick}
             style={{
               fontSize: `${textBox.fontSize * scale}px`,
