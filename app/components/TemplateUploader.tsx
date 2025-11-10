@@ -31,8 +31,8 @@ export default function TemplateUploader({ onImageUpload, currentImageUrl }: Tem
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
           isDragActive
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+            ? 'border-blue-500 bg-blue-900 bg-opacity-30'
+            : 'border-gray-600 hover:border-gray-500 bg-gray-700'
         }`}
       >
         <input {...getInputProps()} />
@@ -43,7 +43,7 @@ export default function TemplateUploader({ onImageUpload, currentImageUrl }: Tem
               alt="Certificate template"
               className="max-w-full max-h-64 mx-auto rounded"
             />
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               Click or drag to replace template
             </p>
           </div>
@@ -62,16 +62,15 @@ export default function TemplateUploader({ onImageUpload, currentImageUrl }: Tem
                 strokeLinejoin="round"
               />
             </svg>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               {isDragActive
                 ? 'Drop the image here'
                 : 'Drag & drop a certificate template, or click to select'}
             </p>
-            <p className="text-xs text-gray-500">PNG, JPG, SVG up to 10MB</p>
+            <p className="text-xs text-gray-400">PNG, JPG, SVG up to 10MB</p>
           </div>
         )}
       </div>
     </div>
   );
 }
-

@@ -75,18 +75,18 @@ export default function MemberManager({
     onMembersChange(
       members.map((m) => {
         const { [fieldName]: _, ...rest } = m;
-        return rest;
+        return rest as Member; // Preserve id and other properties
       })
     );
   };
 
   const renderMemberForm = (member: Partial<Member>, isNew: boolean) => {
     return (
-      <div className="space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="space-y-3 p-4 bg-gray-700 rounded-lg border border-gray-600">
         {fields.map((field) => (
           <div key={field.name}>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {field.label} {field.required && <span className="text-red-500">*</span>}
+            <label className="block text-sm font-medium text-gray-200 mb-1">
+              {field.label} {field.required && <span className="text-red-400">*</span>}
             </label>
             {field.type === 'date' ? (
               <input
@@ -99,7 +99,7 @@ export default function MemberManager({
                     handleUpdateMember(member.id!, { [field.name]: e.target.value });
                   }
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 text-white"
               />
             ) : (
               <input
@@ -112,7 +112,7 @@ export default function MemberManager({
                     handleUpdateMember(member.id!, { [field.name]: e.target.value });
                   }
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="w-full px-3 py-2 border border-gray-600 rounded-md bg-gray-800 text-white"
               />
             )}
           </div>
@@ -131,7 +131,7 @@ export default function MemberManager({
                   setIsAddingMember(false);
                   setNewMember({});
                 }}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500"
               >
                 Cancel
               </button>
@@ -140,7 +140,7 @@ export default function MemberManager({
             <>
               <button
                 onClick={() => setEditingMemberId(null)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500"
               >
                 Done
               </button>
@@ -154,7 +154,7 @@ export default function MemberManager({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Members</h2>
+        <h2 className="text-2xl font-bold text-white">Members</h2>
         <div className="flex gap-2">
           <button
             onClick={handleAddField}
@@ -172,26 +172,26 @@ export default function MemberManager({
       </div>
 
       {/* Field Definitions */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold mb-3">Field Definitions</h3>
+      <div className="bg-gray-700 rounded-lg border border-gray-600 p-4">
+        <h3 className="font-semibold mb-3 text-white">Field Definitions</h3>
         <div className="space-y-2">
           {fields.length === 0 ? (
-            <p className="text-gray-500 text-sm">No fields defined. Add a field to get started.</p>
+            <p className="text-gray-400 text-sm">No fields defined. Add a field to get started.</p>
           ) : (
             fields.map((field) => (
               <div
                 key={field.name}
-                className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                className="flex items-center justify-between p-2 bg-gray-800 rounded"
               >
                 <div>
-                  <span className="font-medium">{field.label}</span>
-                  <span className="text-sm text-gray-500 ml-2">
+                  <span className="font-medium text-white">{field.label}</span>
+                  <span className="text-sm text-gray-400 ml-2">
                     ({field.name}) - {field.type}
                   </span>
                 </div>
                 <button
                   onClick={() => handleDeleteField(field.name)}
-                  className="text-red-500 hover:text-red-700 text-sm"
+                  className="text-red-400 hover:text-red-300 text-sm"
                 >
                   Delete
                 </button>
@@ -207,12 +207,12 @@ export default function MemberManager({
       {/* Members List */}
       <div className="space-y-4">
         {members.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">No members added yet. Add your first member above.</p>
+          <p className="text-gray-400 text-center py-8">No members added yet. Add your first member above.</p>
         ) : (
           members.map((member) => (
             <div
               key={member.id}
-              className="bg-white rounded-lg border border-gray-200 p-4"
+              className="bg-gray-700 rounded-lg border border-gray-600 p-4"
             >
               {editingMemberId === member.id ? (
                 renderMemberForm(member, false)
@@ -222,8 +222,8 @@ export default function MemberManager({
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                       {fields.map((field) => (
                         <div key={field.name}>
-                          <span className="text-sm text-gray-500">{field.label}:</span>
-                          <span className="ml-2 font-medium">
+                          <span className="text-sm text-gray-400">{field.label}:</span>
+                          <span className="ml-2 font-medium text-white">
                             {member[field.name] || '-'}
                           </span>
                         </div>

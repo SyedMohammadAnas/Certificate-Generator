@@ -11,7 +11,7 @@ interface CertificatePreviewProps {
   members: Member[];
   onMemberChange: (index: number) => void;
   onDownload: (member: Member) => void;
-  canvasRef?: React.RefObject<HTMLCanvasElement>;
+  canvasRef?: React.RefObject<HTMLCanvasElement | null>;
 }
 
 export default function CertificatePreview({
@@ -56,8 +56,8 @@ export default function CertificatePreview({
 
   if (!member) {
     return (
-      <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg border border-gray-200">
-        <p className="text-gray-500">Select a member to preview certificate</p>
+      <div className="flex items-center justify-center h-64 bg-gray-700 rounded-lg border border-gray-600">
+        <p className="text-gray-300">Select a member to preview certificate</p>
       </div>
     );
   }
@@ -65,22 +65,22 @@ export default function CertificatePreview({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-lg">Preview</h3>
+        <h3 className="font-semibold text-lg text-white">Preview</h3>
         <div className="flex items-center gap-2">
           <button
             onClick={() => onMemberChange(Math.max(0, selectedMemberIndex - 1))}
             disabled={selectedMemberIndex === 0}
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+            className="px-3 py-1 bg-gray-600 text-white rounded disabled:opacity-50 hover:bg-gray-500"
           >
             ← Previous
           </button>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-300">
             {selectedMemberIndex + 1} / {members.length}
           </span>
           <button
             onClick={() => onMemberChange(Math.min(members.length - 1, selectedMemberIndex + 1))}
             disabled={selectedMemberIndex === members.length - 1}
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded disabled:opacity-50"
+            className="px-3 py-1 bg-gray-600 text-white rounded disabled:opacity-50 hover:bg-gray-500"
           >
             Next →
           </button>
@@ -95,7 +95,7 @@ export default function CertificatePreview({
 
       <div
         ref={containerRef}
-        className="border border-gray-300 rounded-lg p-4 bg-gray-50 overflow-auto flex justify-center"
+        className="border border-gray-600 rounded-lg p-4 bg-gray-700 overflow-auto flex justify-center"
         style={{ maxHeight: '600px' }}
       >
         <canvas
