@@ -64,7 +64,7 @@ export async function dispatchPlunk(input: DispatchInput, cap?: number): Promise
   const sent: string[] = [];
   const failed: { email: string; error: string }[] = [];
   for (const row of jobs) {
-    const email = String(row.email ?? row.Email ?? '').toLowerCase();
+    const email = String((row as Record<string, string>).email ?? (row as Record<string, string>).Email ?? '').toLowerCase();
     if (!isEmailAddress(email)) {
       failed.push({ email: email || '(empty)', error: 'Not an email.' });
       continue;
