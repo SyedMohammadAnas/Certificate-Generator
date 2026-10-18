@@ -56,8 +56,6 @@ export default function CampaignPage() {
   const [testError, setTestError] = useState('');
   const [testResult, setTestResult] = useState('');
   const [draftsOpen, setDraftsOpen] = useState(true);
-  const [sendNote, setSendNote] = useState('');
-
   const tokens = useMemo(
     () => mergeTokensFromText(`${form.subject}\n${form.content}`),
     [form.subject, form.content],
@@ -73,23 +71,37 @@ export default function CampaignPage() {
   const canCompose = canCommit && form.subject.trim().length > 0 && htmlHasText(form.content);
   const canSend = canCompose && form.emails.length > 0;
 
-  useEffect(() => {
+  // Open the mapping dialog when a token stops mapping (adjust state during render, not in an effect).
+  const [prevMappingOk, setPrevMappingOk] = useState(mappingOk);
+  if (prevMappingOk !== mappingOk) {
+    setPrevMappingOk(mappingOk);
     if (!mappingOk) setMappingOpen(true);
-  }, [mappingOk]);
+  }
 
-  const loadDrafts = useCallback(async () => {
+  const fetchDrafts = useCallback(async (): Promise<CampaignDraft[] | null> => {
     const res = await fetch('/api/campaigns');
     if (res.status === 401) {
       router.replace('/login');
-      return;
+      return null;
     }
     const payload = (await res.json()) as { campaigns?: CampaignDraft[]; error?: string };
-    setDrafts(payload.campaigns ?? []);
+    return payload.campaigns ?? [];
   }, [router]);
 
   useEffect(() => {
-    void loadDrafts();
-  }, [loadDrafts]);
+    let active = true;
+    fetchDrafts().then((list) => {
+      if (active && list) setDrafts(list);
+    });
+    return () => {
+      active = false;
+    };
+  }, [fetchDrafts]);
+
+  const loadDrafts = useCallback(async () => {
+    const list = await fetchDrafts();
+    if (list) setDrafts(list);
+  }, [fetchDrafts]);
 
   const applyDraft = (draft: CampaignDraft) => {
     setForm({
@@ -197,12 +209,10 @@ export default function CampaignPage() {
   const newDraft = () => {
     setForm(emptyDraft());
     setCsvError('');
-    setSendNote('');
   };
 
   const sendCampaign = async () => {
     if (!canSend) throw new Error('Subject, body, sender, recipients, and merge fields are required to send.');
-    setSendNote('');
     const res = await fetch('/api/campaigns/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -215,7 +225,6 @@ export default function CampaignPage() {
     const payload = (await res.json()) as { sent?: string[]; failed?: { email: string; error: string }[]; error?: string };
     if (!res.ok) throw new Error(payload.error ?? 'Send failed.');
     const fail = payload.failed ?? [];
-    setSendNote(`Sent ${payload.sent?.length ?? 0}. Failed ${fail.length}${fail[0] ? `: ${fail[0].email}` : ''}.`);
     if (fail.length > 0) throw new Error(`${fail.length} mail(s) failed.`);
   };
 
